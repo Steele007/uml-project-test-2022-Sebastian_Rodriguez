@@ -8,6 +8,7 @@
     $sqlPassword = "phpdemo_mysql_pass";
     $dbName = "phpdemo_mysql_db";
 
+    
     try{
         $conn = new PDO("mysql:host=$sqlHost;dbname=$dbName;port=$port",$sqlUser,$sqlPassword);
 
