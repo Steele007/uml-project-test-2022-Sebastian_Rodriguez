@@ -1,37 +1,22 @@
 # Programmer Demonstration Project, UM Libraries
 
-## Goal:  
-Create hierarchical staff list organized by department.
+## Overview:  
 
-### Specifics:  
-Please complete the project using the following steps:
-1. Set up your environment and import data
+### Main Page:  
+The home page uses HTML to output a list of employees ordered by their department, with supervisors first.
 
-   a. Install docker v. 4.11.0 (83626)
+### API:  
+The API is accessed by using the format hostname/{function name}/{arg1}/{arg2}/...etc.
+Current API calls include:
 
-   b. Clone the following repository into your local machine:
-   https://github.com/UMiamiLibraries/uml-project-test-2022
-   
-   c. Use Docker Compose to build the development environment
-   
-   d. Import the SQL data contained in the repo
-   
-   e. Sanity check:  Open your browser on localhost, using the appropriate port, to make sure the setup is working
-2. Create the application
-   
-   a. Using PHP, output in HTML a hierarchical list of staff arranged by 
-department, with the supervisor as the first person showing in each 
-department
+*hostname/getEmployees
+   Prints out the full database information for every employee, sorted by department, with supervisors at the top.
+*hostname/getDepartments
+   Prints out the full database information for every department.
+*hostname/getEmployeesAt/{param}
+   Gets all employees that work in the specified department, with supervisors on top. {param} can either be the name the department or its id number.
 
-      b. Generate an API that outputs the data in JSON suitable for external
-      applications to consume.
-3. Make your code available for review in advance of the presentation (e.g., GitHub)
-### Presentation:  
-You will present your project to appropriate members of the UM
-   Libraries in the Zoom meeting.  You will explain your solution, identify any issues
-   you encountered, and outline any enhancements that you might add later.  
-### Notes:  
-   - You can use any IDE you want, but for free applications you could try VSCode
-   and MySQL Workbench.
-   - Don’t worry too much about styling the final product.
-   ?
+Errors will return a JSON object in the following form;
+
+{error:bool, message:string}
+

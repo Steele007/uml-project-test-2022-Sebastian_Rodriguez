@@ -22,7 +22,7 @@
     //$sqlSetupQueries = file_get_contents("./data/data.sql");
     //$conn->exec($sqlSetupQueries);
 
-    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
     //Controls what is displayed based on the URI. Default is the html list of emlpoyees by their department.
     if($uri =="/"){
@@ -33,8 +33,22 @@
 
         //Initializes FetchData with the current db connection and calls the function with the name matching the first '/' seperated word.
         $uri = explode('/', $uri);
+
+        //Get arguments if any.
+        $arguments = [];
+
+        for($i = 2; $i < count($uri); $i++){
+            
+            array_push($arguments, $uri[$i]);
+        }
+
         $apiCall = new FetchData($conn);
-        $apiCall->getFunc($uri[1]);
+        if($arguments){
+            $apiCall->getFunc($uri[1], $arguments);
+        }else{
+            $apiCall->getFunc($uri[1]);
+        }
+        
         $conn = null;
 
         //Prevents the rest of the script from executing so the json output can be safely consumed.

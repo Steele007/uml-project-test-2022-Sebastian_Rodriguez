@@ -12,9 +12,66 @@ class FetchData{
         echo $method." is not a valid command.";
     }
 
-    function getEmployees(){
+    private function getEmployeesAt($dept=[]){
+       
+        if(count($dept) != 1){
+            $error = array("error" => true, "message"=>"Must have a single arg.");
+            echo json_encode($error);
+            exit();
+        }
 
-        $departments = $this->conn->query("SELECT * FROM departments;")->fetchAll();
+        $employeeList = [];
+
+        if(intval($dept[0])){
+
+            $supervisors =$this->conn->query("SELECT * FROM staff WHERE id IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${dept[0]};")->fetchAll(PDO::FETCH_ASSOC);
+            $employees = $this->conn->query("SELECT * FROM staff WHERE id NOT IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${dept[0]};")->fetchAll(PDO::FETCH_ASSOC);
+
+        }elseif(is_string($dept[0])){
+
+            $supervisors =$this->conn->query("SELECT * FROM staff WHERE id IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = (SELECT id FROM departments WHERE department = '${dept[0]}');")->fetchAll(PDO::FETCH_ASSOC);
+            $employees = $this->conn->query("SELECT * FROM staff WHERE id NOT IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = (SELECT id FROM departments WHERE department = '${dept[0]}');")->fetchAll(PDO::FETCH_ASSOC);
+
+        }else{
+
+            $error = array("error" => true, "message"=>"Argument must either be an integer Id or the name of the department");
+            echo json_encode($error);
+            exit();
+
+        }
+
+        
+        if($supervisors){
+
+            foreach($supervisors as $row){
+           
+                array_push($employeeList, $row);
+
+            }
+            foreach($employees as $row){
+            
+                array_push($employeeList, $row);
+
+            }
+
+            echo json_encode($employeeList);
+
+        }else{
+            $error = array("error" => true, "message"=>"Department doesn't exist.");
+            echo json_encode($error);
+        }
+        
+    }
+
+    private function getDepartments(){
+
+        $departments = $this->conn->query("SELECT * FROM departments;")->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($departments);
+    }
+
+    private function getEmployees(){
+
+        $departments = $this->conn->query("SELECT * FROM departments;")->fetchAll(PDO::FETCH_ASSOC);
 
         //Set up an associative array indexed by department name 
         $employeeHierarchy = array();
@@ -29,17 +86,17 @@ class FetchData{
         foreach($departments as $department){
 
             //Seperate supervisors and non-supervisors into two separate arrays.
-            $supervisors =$this->conn->query("SELECT * FROM staff WHERE id IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${department['id']};")->fetchAll();
-            $employees = $this->conn->query("SELECT * FROM staff WHERE id NOT IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${department['id']};")->fetchAll();
+            $supervisors =$this->conn->query("SELECT * FROM staff WHERE id IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${department['id']};")->fetchAll(PDO::FETCH_ASSOC);
+            $employees = $this->conn->query("SELECT * FROM staff WHERE id NOT IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${department['id']};")->fetchAll(PDO::FETCH_ASSOC);
 
             foreach($supervisors as $row){
                
-                array_push($employeeHierarchy[$department['department']], array("first_name"=>$row['first_name'], "last_name"=>$row['last_name'], "title"=>$row['title']));
+                array_push($employeeHierarchy[$department['department']], $row);
 
             }
             foreach($employees as $row){
                
-                array_push($employeeHierarchy[$department['department']], array("first_name"=>$row['first_name'], "last_name"=>$row['last_name'], "title"=>$row['title']));
+                array_push($employeeHierarchy[$department['department']], $row);
 
             }
 
