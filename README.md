@@ -21,6 +21,9 @@ Current API calls include:
 * hostname/getEmployeesAt/{param}
    * Gets all employees that work in the specified department, with supervisors on top. {param} can either be the name the department or its id number.
 
+* hostname/getSupervisorEmployees/{param}
+   * Gets all employees that work for the specified supervisor. {param} can be the full or parital name of the supervisor or the supervisor's id number.
+
 * hostname/getEmployee/{param}
    * Gets the employee(s) that match the {param} search criteria. {param} can be the full or parital name of the employee or the employee's id number.
 

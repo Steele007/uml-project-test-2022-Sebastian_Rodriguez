@@ -70,8 +70,18 @@ class FetchData{
 
             if(count($name)==1){
 
-                $employeeResult = $this->conn->query("SELECT * FROM staff WHERE first_name = '${name[0]}';")->fetchAll(PDO::FETCH_ASSOC);
-                $employeeResult = array_merge($employeeResult, $this->conn->query("SELECT * FROM staff WHERE last_name = '${name[0]}';")->fetchAll(PDO::FETCH_ASSOC));
+                if(strpos($name[0], "first_name=") === 0){
+
+                    $name = substr($name[0],11);
+                    $employeeResult = $this->conn->query("SELECT * FROM staff WHERE first_name = '".$name."';")->fetchAll(PDO::FETCH_ASSOC);
+
+                }elseif(strpos($name[0], "last_name=") === 0){
+                    $name = substr($name[0],10);
+                    $employeeResult = $this->conn->query("SELECT * FROM staff WHERE last_name = '".$name."';")->fetchAll(PDO::FETCH_ASSOC);
+                }else{
+                    $employeeResult = $this->conn->query("SELECT * FROM staff WHERE first_name = '${name[0]}';")->fetchAll(PDO::FETCH_ASSOC);
+                    $employeeResult = array_merge($employeeResult, $this->conn->query("SELECT * FROM staff WHERE last_name = '${name[0]}';")->fetchAll(PDO::FETCH_ASSOC));
+                }
 
             }elseif(count($name)==2){
 
@@ -99,6 +109,67 @@ class FetchData{
             echo json_encode($employeeResult);
         }else{
             $error = array("error" => true, "message"=>"Employee doesn't exist.");
+            echo json_encode($error);
+            exit();
+        }
+
+    }
+
+    //Gets a JSON list of all employees that work for the supervisor that matches the search criteria. Input is either an int Id
+    //or string name (either one word or two for first name/last name). May return employees from different supervisors if they share the name.
+    private function getSupervisorEmployees($searchParams=[]){
+        if(count($searchParams) != 1){
+            $error = array("error" => true, "message"=>"Must have a single arg.");
+            echo json_encode($error);
+            exit();
+        }
+
+        if(intval($searchParams[0]) && intval($searchParams[0])!=0){
+
+            $employees = $this->conn->query("SELECT * FROM staff WHERE supervisor_id = ${searchParams[0]};")->fetchAll(PDO::FETCH_ASSOC);
+
+        }elseif(is_string($searchParams[0])){
+
+            $name = explode(' ', $searchParams[0]);
+
+            if(count($name)==1){
+
+                if(strpos($name[0], "first_name=") === 0){
+
+                    $name = substr($name[0],11);
+                    $employees = $this->conn->query("SELECT * FROM staff WHERE supervisor_id = (SELECT id FROM staff WHERE first_name = '".$name."');")->fetchAll(PDO::FETCH_ASSOC);
+
+                }elseif(strpos($name[0], "last_name=") === 0){
+                    $name = substr($name[0],10);
+                    $employees = $this->conn->query("SELECT * FROM staff WHERE supervisor_id = (SELECT id FROM staff WHERE last_name = '".$name."');")->fetchAll(PDO::FETCH_ASSOC);
+                }else{
+                    $employees = $this->conn->query("SELECT * FROM staff WHERE supervisor_id = (SELECT id FROM staff WHERE first_name = '${name[0]}');")->fetchAll(PDO::FETCH_ASSOC);
+                    $employees = array_merge($employees, $this->conn->query("SELECT * FROM staff WHERE supervisor_id = (SELECT id FROM staff WHERE last_name = '${name[0]}');")->fetchAll(PDO::FETCH_ASSOC));
+                }
+
+            }elseif(count($name)==2){
+
+                $employees = $this->conn->query("SELECT * FROM staff WHERE supervisor_id = (SELECT supervisor_id FROM staff WHERE first_name = '${name[0]}' AND last_name = '${name[1]}');")->fetchAll(PDO::FETCH_ASSOC);
+
+            }else{
+
+                $error = array("error" => true, "message"=>"Name must either be one or two words (one name or first and last name).");
+                echo json_encode($error);
+                exit();
+
+            }
+
+        }else{
+
+            $error = array("error" => true, "message"=>"Argument value not supported.");
+            echo json_encode($error);
+            exit();
+        }
+
+        if($employees){
+            echo json_encode($employees);
+        }else{
+            $error = array("error" => true, "message"=>"Supervisor doesn't exist.");
             echo json_encode($error);
             exit();
         }
