@@ -7,15 +7,7 @@ class FetchData{
     //Takes a PDO connection for the rest of the class to function.
     function __construct($conn){
         $this->conn= $conn;
-    }
-
-    //Called when getFunc calls a function that doesn't exist.
-    public function __call($method, $args){
-        $error = array("error" => true, "message"=>$method." is not a valid command.");
-        echo json_encode($error);
-        exit();
-    }
-    
+    }   
 
     //Gets a JSON object representing the department that matches the search criteria. 
     private function getDepartment($searchParams=[]){
@@ -68,6 +60,7 @@ class FetchData{
 
             $name = explode(' ', $searchParams[0]);
 
+            //Checks if parameter is a full or single name.
             if(count($name)==1){
 
                 if(strpos($name[0], "first_name=") === 0){
@@ -124,6 +117,7 @@ class FetchData{
             exit();
         }
 
+        //The dean has a supervisor_id of 0 to indicate they don't have a supervisor so that value is ignored.
         if(intval($searchParams[0]) && intval($searchParams[0])!=0){
 
             $employees = $this->conn->query("SELECT * FROM staff WHERE supervisor_id = ${searchParams[0]};")->fetchAll(PDO::FETCH_ASSOC);
@@ -132,6 +126,7 @@ class FetchData{
 
             $name = explode(' ', $searchParams[0]);
 
+            //Checks if parameter is a full or single name.
             if(count($name)==1){
 
                 if(strpos($name[0], "first_name=") === 0){
@@ -185,8 +180,6 @@ class FetchData{
             exit();
         }
 
-        $employeeList = [];
-
         if(intval($dept[0])){
 
             $supervisors =$this->conn->query("SELECT * FROM staff WHERE id IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${dept[0]};")->fetchAll(PDO::FETCH_ASSOC);
@@ -208,16 +201,7 @@ class FetchData{
         
         if($supervisors){
 
-            foreach($supervisors as $row){
-           
-                array_push($employeeList, $row);
-
-            }
-            foreach($employees as $row){
-            
-                array_push($employeeList, $row);
-
-            }
+            $employeeList = array_merge($supervisors, $employees);
 
             echo json_encode($employeeList);
 
@@ -257,18 +241,7 @@ class FetchData{
             $supervisors =$this->conn->query("SELECT * FROM staff WHERE id IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${department['id']};")->fetchAll(PDO::FETCH_ASSOC);
             $employees = $this->conn->query("SELECT * FROM staff WHERE id NOT IN (SELECT DISTINCT supervisor_id FROM staff) AND department_id = ${department['id']};")->fetchAll(PDO::FETCH_ASSOC);
 
-            foreach($supervisors as $row){
-               
-                array_push($employeeHierarchy[$department['department']], $row);
-
-            }
-            foreach($employees as $row){
-               
-                array_push($employeeHierarchy[$department['department']], $row);
-
-            }
-
-            
+            $employeeHierarchy[$department['department']] = array_merge($supervisors, $employees);
             
         }
         echo json_encode($employeeHierarchy);
@@ -282,12 +255,29 @@ class FetchData{
         echo json_encode($employees);
     }
 
+    //Prints out available API commands.
+    private function help(){
+        echo "/getEmployees: returns a list of all employees.<br>
+        /getDepartments: returns a list of all departments.<br>
+        /getEmployeesByDept: returns a list of all employees ordered by the department they work in with supervisors first.<br>
+        /getEmployeesAt/{int:id or string:department name}: returns a list of all employees that work for the department denoted by the parameter.<br>
+        /getDepartment/{int:id or string:department name}: returns the department denoted by the parameter.<br>
+        /getEmployee/{int:id or string:employee name(format either firstname lastname, name, first_name=name, or last_name=name)}: returns the employee(s) denoted by the parameter.<br>
+        /getSupervisorEmployees/{int:id or string:employee name(format either firstname lastname, name, first_name=name, or last_name=name)}: returns the employees that work for the supervisor denoted by the parameter.<br>";
+    }
+
     //Calls the function matching $funcName along with any of the variables passed.
     function getFunc($funcName, ...$args){
         $funcToCall = $funcName;
         $this->$funcToCall(...$args);
     }
 
+    //Called when getFunc calls a function that doesn't exist.
+    public function __call($method, $args){
+        $error = array("error" => true, "message"=>$method." is not a valid command.");
+        echo json_encode($error);
+        exit();
+    }
 
 }
 ?>

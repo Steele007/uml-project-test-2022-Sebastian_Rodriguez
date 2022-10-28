@@ -20,19 +20,15 @@
     }
 
     //Comment this out after running, the db will retain the data.
-    //$sqlSetupQueries = file_get_contents("./data/data.sql");
-    //$conn->exec($sqlSetupQueries);
+    $sqlSetupQueries = file_get_contents("./data/data.sql");
+    $conn->exec($sqlSetupQueries);
 
     $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
     //Controls what is displayed based on the URI. Default is the html list of emlpoyees by their department.
-    if($uri =="/"){
-
-
-
-    }else{
-
-        //Initializes FetchData with the current db connection and calls the function with the name matching the first '/' seperated word.
+    if($uri !="/"){
+        
+        //Separates the URI parameters for consumption by getFunc.
         $uri = explode('/', $uri);
 
         //Get arguments if any.
@@ -43,6 +39,7 @@
             array_push($arguments, $uri[$i]);
         }
 
+        //Initializes FetchData with the current db connection and calls the function with the name matching the first '/' seperated word.
         $apiCall = new FetchData($conn);
         if($arguments){
             $apiCall->getFunc($uri[1], $arguments);
@@ -54,6 +51,7 @@
 
         //Prevents the rest of the script from executing so the json output can be safely consumed.
         exit();
+
     }
 ?>
 
