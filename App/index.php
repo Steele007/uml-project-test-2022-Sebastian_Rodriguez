@@ -1,6 +1,6 @@
 
 <?php
-    include("./api/FetchData.php");
+    include("./api/EmployeeApi.php");
 
     $sqlHost = "mysql";
     $port = "3306";
@@ -40,7 +40,7 @@
         }
 
         //Initializes FetchData with the current db connection and calls the function with the name matching the first '/' seperated word.
-        $apiCall = new FetchData($conn);
+        $apiCall = new EmployeeApi($conn);
         if($arguments){
             $apiCall->getFunc($uri[1], $arguments);
         }else{

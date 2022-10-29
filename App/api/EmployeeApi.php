@@ -1,6 +1,6 @@
 <?php
 
-class FetchData{
+class EmployeeApi{
 
     private $conn;
 
@@ -54,7 +54,7 @@ class FetchData{
             
         if(intval($searchParams[0])){
 
-            $employeeResult = $this->conn->query("SELECT * FROM staff WHERE id = ${searchParams[0]};")->fetch(PDO::FETCH_ASSOC);
+            $employeeResult = $this->conn->query("SELECT * FROM staff WHERE id = ${searchParams[0]};")->fetchAll(PDO::FETCH_ASSOC);
 
         }elseif(is_string($searchParams[0])){
 
