@@ -24,7 +24,7 @@
     $conn->exec($sqlSetupQueries);
 
     $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-
+    
     //Controls what is displayed based on the URI. Default is the html list of emlpoyees by their department.
     if($uri !="/"){
         
