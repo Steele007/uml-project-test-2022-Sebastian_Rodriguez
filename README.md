@@ -3,7 +3,7 @@
 ## Overview: 
 
 ### Running the App:
-1. Download the github repository.
+1. Clone the github repository.
 2. Run 'docker compose up' in the command line.
 3. Once you have run the application once, feel free to comment out the code that executes the contents of data.sql in index.php (lines 23 and 24).
 
