@@ -15,6 +15,7 @@ class EmployeeApi{
         if(count($searchParams) != 1){
             $error = array("error" => true, "message"=>"Must have a single arg.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
 
@@ -29,6 +30,7 @@ class EmployeeApi{
         }else{
             $error = array("error" => true, "message"=>"Argument value not supported.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
 
@@ -37,6 +39,7 @@ class EmployeeApi{
         }else{
             $error = array("error" => true, "message"=>"Department doesn't exist.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
     }
@@ -49,6 +52,7 @@ class EmployeeApi{
         if(count($searchParams) != 1){
             $error = array("error" => true, "message"=>"Must have a single arg.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
             
@@ -84,6 +88,7 @@ class EmployeeApi{
 
                 $error = array("error" => true, "message"=>"Name must either be one or two words (one name or first and last name).");
                 echo json_encode($error);
+                $conn = null;
                 exit();
 
             }
@@ -92,6 +97,7 @@ class EmployeeApi{
 
             $error = array("error" => true, "message"=>"Argument value not supported.");
             echo json_encode($error);
+            $conn = null;
             exit();
 
         }
@@ -103,6 +109,7 @@ class EmployeeApi{
         }else{
             $error = array("error" => true, "message"=>"Employee doesn't exist.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
 
@@ -114,6 +121,7 @@ class EmployeeApi{
         if(count($searchParams) != 1){
             $error = array("error" => true, "message"=>"Must have a single arg.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
 
@@ -150,6 +158,7 @@ class EmployeeApi{
 
                 $error = array("error" => true, "message"=>"Name must either be one or two words (one name or first and last name).");
                 echo json_encode($error);
+                $conn = null;
                 exit();
 
             }
@@ -158,6 +167,7 @@ class EmployeeApi{
 
             $error = array("error" => true, "message"=>"Argument value not supported.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
 
@@ -166,6 +176,7 @@ class EmployeeApi{
         }else{
             $error = array("error" => true, "message"=>"Supervisor doesn't exist.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
 
@@ -177,6 +188,7 @@ class EmployeeApi{
         if(count($dept) != 1){
             $error = array("error" => true, "message"=>"Must have a single arg.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
 
@@ -194,6 +206,7 @@ class EmployeeApi{
 
             $error = array("error" => true, "message"=>"Argument must either be an integer Id or the name of the department");
             echo json_encode($error);
+            $conn = null;
             exit();
 
         }
@@ -208,6 +221,7 @@ class EmployeeApi{
         }else{
             $error = array("error" => true, "message"=>"Department doesn't exist.");
             echo json_encode($error);
+            $conn = null;
             exit();
         }
         
@@ -276,6 +290,7 @@ class EmployeeApi{
     public function __call($method, $args){
         $error = array("error" => true, "message"=>$method." is not a valid command.");
         echo json_encode($error);
+        $conn = null;
         exit();
     }
 
