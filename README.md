@@ -5,6 +5,12 @@
 ### What is This?
 My solution to a take-home project given by the University of Miami Libraries as part of their interview process. [Given here](https://github.com/UMiamiLibraries/uml-project-test-2022).
 
+Instructions were as follows:
+
+   a. Using PHP, output in HTML a hierarchical list of staff arranged by department, with the supervisor as the first person showing in each department
+
+   b. Generate an API that outputs the data in JSON suitable for external applications to consume.
+
 ### Running the App:
 1. Clone the github repository.
 2. Run 'docker compose up' in the command line.
