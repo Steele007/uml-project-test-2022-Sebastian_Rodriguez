@@ -2,6 +2,9 @@
 
 ## Overview: 
 
+### What is This?
+My solution to a take-home project given by the University of Miami Libraries as part of their interview process. [Given here](https://github.com/UMiamiLibraries/uml-project-test-2022).
+
 ### Running the App:
 1. Clone the github repository.
 2. Run 'docker compose up' in the command line.
